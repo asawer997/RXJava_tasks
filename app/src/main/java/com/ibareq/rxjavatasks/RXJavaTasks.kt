@@ -17,7 +17,11 @@ object RXJavaTasks {
      * let it emit characters form A to Z each 1 second
      */
     fun task1(): Observable<String> {
-        return Observable.
+
+        val charFromAtoZ = ('A'..'Z').asIterable().map{ it.toString() }
+        val timeUint = Observable.interval(1,TimeUnit.SECONDS)
+        return Observable.fromIterable( charFromAtoZ).zipWith(timeUint, {l1,l2 ->
+            l1 })
     }
 
     /**
@@ -27,7 +31,7 @@ object RXJavaTasks {
     fun task2(): Observable<String> {
         val mList = listOf("A", "B", "C", "C", "D", "B", "E")
         return Observable.fromIterable(mList)
-            .zipWith(Observable.interval(300, TimeUnit.MILLISECONDS), {item, _ -> item})
+            .zipWith(Observable.interval(300, TimeUnit.MILLISECONDS), {item, _ -> item}).distinct()
     }
 
     /**
@@ -37,7 +41,7 @@ object RXJavaTasks {
     fun task3(): Observable<String> {
         val firstObservable = Observable.just("A", "B", "C", "D", "E")
         val secondObservable = Observable.range(1,5)
-        return firstObservable.mergeWith(secondObservable)
+        return firstObservable.mergeWith(secondObservable.map { it.toString() })
             .zipWith(Observable.interval(300, TimeUnit.MILLISECONDS), {item, _ -> item})
     }
 
@@ -45,7 +49,7 @@ object RXJavaTasks {
      * add the required operators to emit data from 21 to 80 only
      */
     fun task4(): Observable<Int> {
-        return Observable.range(1,100)
+        return Observable.range(1,100).skip(20)
             .zipWith(Observable.interval(300, TimeUnit.MILLISECONDS), {item, _ -> item})
     }
 
@@ -53,10 +57,10 @@ object RXJavaTasks {
      * let your observable emit these items: A1, B2, C3, D4, E5
      */
     fun task5(): Observable<String> {
-        val firstObservable = Observable.just("A", "B", "C", "D", "E").zipWith(Observable.interval(300, TimeUnit.MILLISECONDS), {item, _ -> item})
-        val secondObservable = Observable.range(1,5).zipWith(Observable.interval(300, TimeUnit.MILLISECONDS), {item, _ -> item})
+        val letter = Observable.just("A", "B", "C", "D", "E").zipWith(Observable.interval(300, TimeUnit.MILLISECONDS), {item, _ -> item})
+        val number = Observable.range(1,5).zipWith(Observable.interval(300, TimeUnit.MILLISECONDS), {item, _ -> item})
 
-        return Observable.
+        return Observable.zip(letter,number,{a , b -> "$a$b"})
     }
 
 }
